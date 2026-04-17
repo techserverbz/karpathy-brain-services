@@ -1,0 +1,43 @@
+# Subservices — {SERVICE_NAME}
+
+> Master registry of subservices. Compile reads this to route facts; skills pages read this to find backing assets.
+> **Adding a new subservice or authority:** add an entry below + run `register-subservice.sh` to create matching folders.
+
+## Registered Subservices
+
+<!-- Example single-authority subservice -->
+
+### {subservice-slug}
+
+- **authority_mode:** `single` (flat category structure, no authority nesting)
+- **Description:** {one-line description}
+- **Scope:** {what this subservice covers}
+- **Wiki paths:**
+  - Skills: `skills/{subservice-slug}/{regulations,methodology,tools,schemes}/`
+  - Candidates: `candidate/{subservice-slug}/{regulations,methodology,tools,schemes}/`
+  - Projects: `projects/{subservice-slug}/`
+- **Assets path:** `assets/{AssetsFolder}/`
+- **Deliverables:** {list of output files}
+
+<!-- Example multi-authority subservice -->
+
+### {subservice-slug-multi}
+
+- **authority_mode:** `multi` (authority folder sits between subservice and category)
+- **Description:** {one-line description}
+- **Scope:** {what this subservice covers}
+- **Planning authorities used:**
+  - **{auth-slug-1}** ({AuthorityName1}) — assets: `assets/{path}/`
+    - Wiki skills: `skills/{subservice}/{auth-slug-1}/{cats}/`
+    - Candidates: `candidate/{subservice}/{auth-slug-1}/{cats}/`
+  - **{auth-slug-2}** ({AuthorityName2}) — assets: `assets/{path}/`
+    - Wiki skills: `skills/{subservice}/{auth-slug-2}/{cats}/`
+    - Candidates: `candidate/{subservice}/{auth-slug-2}/{cats}/`
+  - **shared** — cross-authority facts (billing, compliance, reporting)
+
+## Notes
+
+- `single` mode = one authority or regulator covers all work; no authority folder.
+- `multi` mode = multiple authorities; nest their folder between subservice and category.
+- `shared/` is always available under multi-auth for cross-authority facts.
+- Categories inside each subservice/authority: `regulations`, `methodology`, `tools`, `schemes`.
