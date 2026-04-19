@@ -21,27 +21,43 @@ See `CLAUDEMD-SNIPPET.md` for the full security section that goes into your CLAU
 
 ---
 
+## 🚀 Admin: Just Paste This URL to Claude
+
+Tell Claude:
+> Install this for {service-name}: https://github.com/techserverbz/karpathy-brain-services
+
+Claude will ask where to clone (your choice — Drive for portability, local for simplicity) and which service path on Drive to install into, then handle the rest.
+
+---
+
 ## Admin-Only Git Workflow
 
-**Only the admin (Shubham or a designated maintainer) clones this repo and runs `install.sh`.** Teammates never touch git — they just open Claude Code in the service folder and work. Drive syncs the installed hooks to their machines automatically.
+**Only the admin (Shubham or designated maintainer) clones this repo and runs `install.sh`.** Teammates never touch git — they just open Claude Code in the service folder and work. Drive syncs the installed hooks to their machines automatically.
 
 ### Why admin-only?
 
 - One source of truth: everyone gets the exact same hook version at the same time
 - No "did you git pull?" confusion between teammates
-- `.git/` stays on the admin's machine — never on Drive (Drive syncing `.git/` causes conflicts)
-- Commit info is written into the wiki itself (`_state/karpathy_sync.json`), so teammates can see which version they're on **even if the `.git/` clone is lost or on a different machine**
+- Commit info is written into the wiki itself (`_state/karpathy_sync.json`), so teammates can see which version they're on **even if the admin's `.git/` clone is lost or on a different machine**
+
+### Where does the admin clone it?
+
+**Admin's choice.** Common options:
+
+| Location | Pros | Cons |
+|---|---|---|
+| `~/Desktop/Github/karpathy-brain-services` (local) | Fast, simple, no Drive sync issues | Only on that machine |
+| `/g/My Drive/Admin/karpathy-brain-services` (Drive) | Portable across admin's machines | Drive occasionally syncs `.git/` mid-operation — watch for conflicts |
+| Anywhere else stable | — | — |
 
 ### Admin setup (one-time)
 
 ```bash
-# Clone the repo somewhere stable on admin's machine (NOT on Drive)
-mkdir -p ~/Code
-cd ~/Code
-git clone https://github.com/techserverbz/karpathy-brain-services.git
-cd karpathy-brain-services
+# Clone wherever you prefer
+git clone https://github.com/techserverbz/karpathy-brain-services.git <your-location>
+cd <your-location>
 
-# Run install.sh pointing at the Drive service folder
+# Run install.sh pointing at the Drive service folder (the TARGET)
 bash install.sh "/g/My Drive/Services/Real Estate"
 ```
 
@@ -50,7 +66,7 @@ This writes hooks into `{service}/.claude/hooks/` and a sync log into `{service}
 ### Admin updates (whenever there's a new commit)
 
 ```bash
-cd ~/Code/karpathy-brain-services
+cd <your-clone-location>
 git pull
 bash install.sh "/g/My Drive/Services/Real Estate"
 ```
@@ -59,7 +75,7 @@ Drive syncs the new hooks to every teammate's machine within seconds.
 
 ### How teammates see the version
 
-The sync log lives in the wiki itself — no `.git/` needed:
+The sync log lives in the wiki itself — no `.git/` access needed:
 
 ```bash
 cat "/g/My Drive/Services/Real Estate/.claude/wiki/_state/karpathy_sync.json"
@@ -67,7 +83,7 @@ cat "/g/My Drive/Services/Real Estate/.claude/wiki/_state/karpathy_sync.json"
 
 Shows `git_commit_short`, `git_commit_date`, `git_commit_message`, `installed_by`, `installed_at`. This file IS on Drive, so everyone sees it.
 
-If the admin's `.git/` clone is ever lost, the wiki still knows which version it's on. The clone can be re-created from GitHub at any time.
+**Resilience:** if the admin's `.git/` clone is ever lost, the wiki still knows which version it's on. The clone can be re-created from GitHub at any time.
 
 ### Windows paths
 
