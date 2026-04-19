@@ -23,10 +23,15 @@ See `CLAUDEMD-SNIPPET.md` for the full security section that goes into your CLAU
 
 ## 🚀 Admin: Just Paste This URL to Claude
 
-Tell Claude:
-> Install this for {service-name}: https://github.com/techserverbz/karpathy-brain-services
+**Install or update:**
+> Install this for Real Estate: https://github.com/techserverbz/karpathy-brain-services
 
-Claude will ask where to clone (your choice — Drive for portability, local for simplicity) and which service path on Drive to install into, then handle the rest.
+Claude asks where to clone (your choice) and which service path on Drive, then handles the rest.
+
+**Check if outdated:**
+> Is Real Estate's karpathy-brain-services up to date? https://github.com/techserverbz/karpathy-brain-services
+
+Claude reads the wiki's sync log at `{service}/.claude/wiki/_state/karpathy_sync.json`, compares with the latest commit on GitHub, reports the diff, and offers to update if behind. Works even on machines that don't have the `.git/` clone — the sync log in the wiki is self-contained.
 
 ---
 
