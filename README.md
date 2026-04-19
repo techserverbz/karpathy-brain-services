@@ -21,6 +21,47 @@ See `CLAUDEMD-SNIPPET.md` for the full security section that goes into your CLAU
 
 ---
 
+## Where to Clone This Repo (Each Teammate)
+
+**The clone is local to each teammate's machine. The TARGET service folder is on Google Drive.**
+
+Two separate locations:
+
+| What | Where | Why |
+|---|---|---|
+| **Repo clone** (source) | `~/Code/karpathy-brain-services` (local only) | Each teammate has their own clone for `git pull`. Never on Drive — Drive syncing `.git/` causes conflicts. |
+| **Service folder** (target) | `G:/My Drive/Services/{ServiceName}/` (Drive-synced) | This is the actual team wiki. Drive syncs it to everyone. |
+
+### One-time setup (each teammate)
+
+```bash
+# 1. Clone the repo locally (NOT on Drive)
+mkdir -p ~/Code
+cd ~/Code
+git clone https://github.com/techserverbz/karpathy-brain-services.git
+cd karpathy-brain-services
+
+# 2. Run install.sh pointing at the Drive service folder
+bash install.sh "/g/My Drive/Services/Real Estate"
+```
+
+### To update later (each teammate runs this periodically)
+
+```bash
+cd ~/Code/karpathy-brain-services
+git pull
+bash install.sh "/g/My Drive/Services/Real Estate"
+```
+
+Every run updates the hooks on Drive and writes a new entry to `{service}/.claude/wiki/_state/karpathy_sync.json` + `karpathy_sync_history.log`. The whole team can then see who last synced + from which commit.
+
+### Windows paths
+
+- Git Bash Drive letter format: `/g/My Drive/Services/...` (not `G:/`)
+- On Mac, replace `/g/` with `/Users/{you}/Google Drive/`
+
+---
+
 ## What's in this folder
 
 ```
