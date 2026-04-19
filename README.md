@@ -240,3 +240,41 @@ Candidate is proposed knowledge. Skills is verified knowledge. Only humans promo
 **Skills page got overwritten:** It shouldn't have. Check frontmatter — if `locked: true` is missing, add it. Compile honors `locked: true` strictly.
 
 **Team member's raw logs not appearing:** Check Drive sync status. Check their `.claude/settings.json` has the hooks registered with correct paths.
+
+---
+
+## Sync Log — Team Sees Who Last Updated (Google Drive)
+
+Every time someone runs `bash install.sh ...`, it writes two files inside `{service}/.claude/wiki/_state/`:
+
+- `karpathy_sync.json` — current state: commit hash, date, who installed, from which machine
+- `karpathy_sync_history.log` — append-only history (visible to the whole team since it's on Drive)
+
+This means any teammate can check who last synced the hooks and which commit they were on — useful when debugging "why does X behave differently for Akhil than me?"
+
+**Check current state:**
+```bash
+cat "/g/My Drive/Services/Real Estate/.claude/wiki/_state/karpathy_sync.json"
+```
+
+Example:
+```json
+{
+  "flavour": "services",
+  "service_name": "Real Estate",
+  "installed_at": "2026-04-19T21:55:00Z",
+  "installed_by": "Shubham(Code)@DESKTOP",
+  "git_commit": "2a524f4a...",
+  "git_commit_short": "2a524f4",
+  "git_commit_date": "2026-04-17T14:10:13Z",
+  "git_commit_message": "Karpathy Brain — Services: ...",
+  "git_remote": "https://github.com/techserverbz/karpathy-brain-services.git"
+}
+```
+
+**See full team history:**
+```bash
+cat "{service}/.claude/wiki/_state/karpathy_sync_history.log"
+```
+
+**Update:** `cd` into your clone, then `git pull && bash install.sh "{service-path}"`. Every teammate should do this periodically to stay in sync.
