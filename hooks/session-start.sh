@@ -36,7 +36,7 @@ if [ -d "$WIKI_HOME" ]; then
 
   # --- Recover last crashed session ---
   PREV_RAWLOG=""
-  [ -f "$WIKI_STATE/current_rawlog.txt" ] && PREV_RAWLOG=$(cat "$WIKI_STATE/current_rawlog.txt" 2>/dev/null | tr -d '[:space:]')
+  [ -f "$WIKI_STATE/current_rawlog.txt" ] && PREV_RAWLOG=$(cat "$WIKI_STATE/current_rawlog.txt" 2>/dev/null | tr -d '\n\r')
   if [ -n "$PREV_RAWLOG" ] && [ -f "$PREV_RAWLOG" ] && ! grep -q "session_end:" "$PREV_RAWLOG" 2>/dev/null; then
     ORPHAN_SID=$(grep -m1 'session_id:' "$PREV_RAWLOG" 2>/dev/null | sed 's/.*session_id: *//' | tr -d '[:space:]')
     ORPHAN_JSONL=""

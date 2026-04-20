@@ -27,7 +27,7 @@ fi
 echo "${SESSION_ID:0:8}" > "$WIKI_STATE/last_session_id.txt"
 
 RAW_LOG=""
-[ -f "$WIKI_STATE/current_rawlog.txt" ] && RAW_LOG=$(cat "$WIKI_STATE/current_rawlog.txt" 2>/dev/null | tr -d '[:space:]')
+[ -f "$WIKI_STATE/current_rawlog.txt" ] && RAW_LOG=$(cat "$WIKI_STATE/current_rawlog.txt" 2>/dev/null | tr -d '\n\r')
 if [ -z "$RAW_LOG" ] || [ ! -f "$RAW_LOG" ]; then
   RAW_LOG=$(ls -t "$WIKI_RAW"/${TODAY}*.md 2>/dev/null | head -1)
 fi

@@ -22,7 +22,7 @@ if [ "$ACTION" = "compile" ] && [ "$RAW_COUNT" -eq 0 ]; then
 fi
 
 ACTIVE_LOG=""
-[ -f "$WIKI_STATE/current_rawlog.txt" ] && ACTIVE_LOG=$(cat "$WIKI_STATE/current_rawlog.txt" 2>/dev/null | tr -d '[:space:]')
+[ -f "$WIKI_STATE/current_rawlog.txt" ] && ACTIVE_LOG=$(cat "$WIKI_STATE/current_rawlog.txt" 2>/dev/null | tr -d '\n\r')
 ACTIVE_BASENAME=""
 [ -n "$ACTIVE_LOG" ] && ACTIVE_BASENAME=$(basename "$ACTIVE_LOG")
 

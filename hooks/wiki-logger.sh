@@ -22,7 +22,7 @@ TOOL_NAME=$(echo "$HOOK_JSON" | python3 -c "import sys,json; d=json.load(sys.std
 SESSION_ID=$(echo "$HOOK_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('session_id',''))" 2>/dev/null)
 
 RAW_LOG=""
-[ -f "$WIKI_STATE/current_rawlog.txt" ] && RAW_LOG=$(cat "$WIKI_STATE/current_rawlog.txt" 2>/dev/null | tr -d '[:space:]')
+[ -f "$WIKI_STATE/current_rawlog.txt" ] && RAW_LOG=$(cat "$WIKI_STATE/current_rawlog.txt" 2>/dev/null | tr -d '\n\r')
 [ -z "$RAW_LOG" ] || [ ! -f "$RAW_LOG" ] && exit 0
 
 # Inject session_id on first tool call
