@@ -5,12 +5,19 @@
 SERVICE_DIR="$1"
 if [ -z "$SERVICE_DIR" ]; then
   echo "Usage: bash install.sh /path/to/service/project"
+  echo "       bash install.sh /path/to/service/project/.claude"
   echo ""
   echo "Example:"
-  echo "  bash install.sh \"/g/My Drive/Services/Real Estate\""
-  echo "  bash install.sh ~/projects/my-service"
+  echo "  bash install.sh \"/g/My Drive/Real Estate\""
+  echo "  bash install.sh \"/g/My Drive/Real Estate/.claude\""
   exit 1
 fi
+
+# If user passed the .claude path directly, strip it to get the project root
+case "$SERVICE_DIR" in
+  */.claude) SERVICE_DIR="${SERVICE_DIR%/.claude}" ;;
+  */.claude/) SERVICE_DIR="${SERVICE_DIR%/.claude/}" ;;
+esac
 
 if [ ! -d "$SERVICE_DIR" ]; then
   echo "Directory not found: $SERVICE_DIR"
