@@ -203,7 +203,8 @@ echo "[$SERVICE_NAME Wiki] Running $ACTION via claude -p..."
 PROMPT_FILE=$(mktemp)
 echo "$PROMPT" > "$PROMPT_FILE"
 
-cd "$WIKI_HOME" && claude -p "$(cat "$PROMPT_FILE")" --dangerously-skip-permissions 2>/dev/null
+# Do NOT cd into wiki — it creates a session with .claude/wiki as cwd, polluting project dirs
+claude -p "$(cat "$PROMPT_FILE")" --dangerously-skip-permissions 2>/dev/null
 
 rm -f "$PROMPT_FILE"
 echo "[$SERVICE_NAME Wiki] $ACTION complete."
