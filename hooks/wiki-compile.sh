@@ -57,55 +57,36 @@ if [ "$ACTION" = "primer" ]; then
     [ -d "$subdir" ] || continue
     SUBSERVICE=$(basename "$subdir")
 
-    SKILLS_CONTENT=""
-    while IFS= read -r sf; do
-      [ -f "$sf" ] || continue
-      rel="${sf#$subdir}"
-      SKILLS_CONTENT+="--- $rel ---
-$(cat "$sf")
-
-"
-    done < <(find "$subdir" -name "*.md" ! -name "_*" 2>/dev/null | sort)
-
-    [ -z "$SKILLS_CONTENT" ] && continue
+    skill_count=$(find "$subdir" -name "*.md" ! -name "_*" 2>/dev/null | wc -l | tr -d '[:space:]')
+    [ "$skill_count" -eq 0 ] && continue
 
     PRIMER_FILE="$subdir/_session-primer.md"
     SUBSERVICE_TITLE=$(echo "$SUBSERVICE" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++){$i=toupper(substr($i,1,1))substr($i,2)};print}')
+    TODAY=$(date +%Y-%m-%d)
 
+    # Build prompt via append — avoids heredoc interpolation + ARG_MAX limits
     PTMP=$(mktemp)
-    cat > "$PTMP" << PRIMEREOF
-Write a session primer for the '$SUBSERVICE' real estate subservice.
+    echo "Generate a ~400-word session primer for the \"$SUBSERVICE\" real estate subservice." > "$PTMP"
+    echo "Output ONLY the primer markdown — no preamble, no explanation, just the markdown." >> "$PTMP"
+    echo "" >> "$PTMP"
+    echo "SKILL PAGES:" >> "$PTMP"
+    find "$subdir" -name "*.md" ! -name "_*" 2>/dev/null | sort | while IFS= read -r sf; do
+      echo "--- ${sf##*/} ---" >> "$PTMP"
+      cat "$sf" >> "$PTMP"
+      echo "" >> "$PTMP"
+    done
+    echo "" >> "$PTMP"
+    echo "Structure (~400 words, strict order):" >> "$PTMP"
+    echo "# Session Primer — $SUBSERVICE_TITLE" >> "$PTMP"
+    echo "> Auto-generated | Updated: $TODAY | Source: skills/$SUBSERVICE/" >> "$PTMP"
+    echo "" >> "$PTMP"
+    echo "## Workflow" >> "$PTMP"
+    echo "## Key Rules" >> "$PTMP"
+    echo "## Schemes" >> "$PTMP"
+    echo "## Tools" >> "$PTMP"
+    echo "## Common Mistakes" >> "$PTMP"
 
-SKILL PAGES:
-$SKILLS_CONTENT
-
-Write ONLY the content for this file: $PRIMER_FILE
-(The file will be saved at that path — write it now using the Write tool)
-
-Sections (~400 words total, strict order):
-
-# Session Primer — $SUBSERVICE_TITLE
-> Auto-generated | Updated: $(date +%Y-%m-%d) | Source: skills/$SUBSERVICE/
-
-## Workflow
-(numbered 5-step sequence for this subservice)
-
-## Key Rules
-(3-4 regulation/calculation facts used in 80% of sessions — include numbers)
-
-## Schemes
-(active schemes with FSI/eligibility snapshot — one line each)
-
-## Tools
-(which MCP or script for which task — practical mapping)
-
-## Common Mistakes
-(top 3 gotchas from methodology pages)
-
-Be dense and practical. No fluff.
-PRIMEREOF
-
-    cd "$WIKI_HOME" && claude -p "$(cat "$PTMP")" --dangerously-skip-permissions 2>/dev/null > "$PRIMER_FILE"
+    cd "$WIKI_HOME" && claude -p < "$PTMP" --dangerously-skip-permissions 2>/dev/null > "$PRIMER_FILE"
     rm -f "$PTMP"
     echo "[$SERVICE_NAME Wiki] Primer: $SUBSERVICE done."
   done
