@@ -47,6 +47,72 @@ INDEX_CONTENT=""
 SUBSERVICES_CONTENT=""
 [ -f "$WIKI_PAGES/subservices.md" ] && SUBSERVICES_CONTENT=$(cat "$WIKI_PAGES/subservices.md")
 
+# Primer action — early exit, own loop (no standard prompt/claude flow)
+if [ "$ACTION" = "primer" ]; then
+  echo "[$SERVICE_NAME Wiki] Generating session primers..."
+  SKILLS_BASE="$WIKI_PAGES/skills"
+  [ ! -d "$SKILLS_BASE" ] && echo "[Wiki] No skills dir." && exit 0
+
+  for subdir in "$SKILLS_BASE"/*/; do
+    [ -d "$subdir" ] || continue
+    SUBSERVICE=$(basename "$subdir")
+
+    SKILLS_CONTENT=""
+    while IFS= read -r sf; do
+      [ -f "$sf" ] || continue
+      rel="${sf#$subdir}"
+      SKILLS_CONTENT+="--- $rel ---
+$(cat "$sf")
+
+"
+    done < <(find "$subdir" -name "*.md" ! -name "_*" 2>/dev/null | sort)
+
+    [ -z "$SKILLS_CONTENT" ] && continue
+
+    PRIMER_FILE="$subdir/_session-primer.md"
+    SUBSERVICE_TITLE=$(echo "$SUBSERVICE" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++){$i=toupper(substr($i,1,1))substr($i,2)};print}')
+
+    PTMP=$(mktemp)
+    cat > "$PTMP" << PRIMEREOF
+Write a session primer for the '$SUBSERVICE' real estate subservice.
+
+SKILL PAGES:
+$SKILLS_CONTENT
+
+Write ONLY the content for this file: $PRIMER_FILE
+(The file will be saved at that path — write it now using the Write tool)
+
+Sections (~400 words total, strict order):
+
+# Session Primer — $SUBSERVICE_TITLE
+> Auto-generated | Updated: $(date +%Y-%m-%d) | Source: skills/$SUBSERVICE/
+
+## Workflow
+(numbered 5-step sequence for this subservice)
+
+## Key Rules
+(3-4 regulation/calculation facts used in 80% of sessions — include numbers)
+
+## Schemes
+(active schemes with FSI/eligibility snapshot — one line each)
+
+## Tools
+(which MCP or script for which task — practical mapping)
+
+## Common Mistakes
+(top 3 gotchas from methodology pages)
+
+Be dense and practical. No fluff.
+PRIMEREOF
+
+    cd "$WIKI_HOME" && claude -p "$(cat "$PTMP")" --dangerously-skip-permissions 2>/dev/null
+    rm -f "$PTMP"
+    echo "[$SERVICE_NAME Wiki] Primer: $SUBSERVICE done."
+  done
+  echo "[$SERVICE_NAME Wiki] All primers complete."
+  exit 0
+fi
+
 case "$ACTION" in
   compile)
     PROMPT="You are the $SERVICE_NAME wiki compiler at $WIKI_HOME. This is a TEAM wiki with skills/candidate tiers.
@@ -208,3 +274,6 @@ claude -p "$(cat "$PROMPT_FILE")" --dangerously-skip-permissions 2>/dev/null
 
 rm -f "$PROMPT_FILE"
 echo "[$SERVICE_NAME Wiki] $ACTION complete."
+
+# After compile, regenerate session primers in background
+[ "$ACTION" = "compile" ] && bash "$0" primer > "$WIKI_STATE/last_primer_log.txt" 2>&1 &
