@@ -105,7 +105,7 @@ Sections (~400 words total, strict order):
 Be dense and practical. No fluff.
 PRIMEREOF
 
-    cd "$WIKI_HOME" && claude -p "$(cat "$PTMP")" --dangerously-skip-permissions 2>/dev/null
+    cd "$WIKI_HOME" && claude -p "$(cat "$PTMP")" --dangerously-skip-permissions 2>/dev/null > "$PRIMER_FILE"
     rm -f "$PTMP"
     echo "[$SERVICE_NAME Wiki] Primer: $SUBSERVICE done."
   done
