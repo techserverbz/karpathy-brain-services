@@ -13,10 +13,15 @@ if [ -z "$SERVICE_DIR" ]; then
   exit 1
 fi
 
+# Normalize backslashes to forward slashes (Windows paths from Explorer come with \)
+SERVICE_DIR="${SERVICE_DIR//\\//}"
+
+# Strip trailing slash (any) so /.claude pattern matching is consistent
+SERVICE_DIR="${SERVICE_DIR%/}"
+
 # If user passed the .claude path directly, strip it to get the project root
 case "$SERVICE_DIR" in
   */.claude) SERVICE_DIR="${SERVICE_DIR%/.claude}" ;;
-  */.claude/) SERVICE_DIR="${SERVICE_DIR%/.claude/}" ;;
 esac
 
 if [ ! -d "$SERVICE_DIR" ]; then
